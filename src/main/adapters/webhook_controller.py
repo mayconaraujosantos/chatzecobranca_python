@@ -15,16 +15,28 @@ class WebhookController:
         try:
             data = request.get_json()
 
+            print(f"📨 Webhook recebido: {data}")
+
             if not data:
+                print("❌ Nenhum dado recebido no webhook")
                 return jsonify({"error": "No data received"}), 400
 
-            # Verificar se é uma mensagem recebida
+            # Verificar se é uma mensagem recebida do ChatPro
             if data.get('type') == 'received' and data.get('body'):
+                print("✅ Mensagem recebida válida, processando...")
                 result = self.process_webhook.execute(data)
                 return jsonify(result), 200
 
-            return jsonify({"status": "acknowledged"}), 200
+            # Ack de mensagem (confirmação de entrega)
+            elif data.get('cmd') == 'ack':
+                print(f"✅ ACK recebido para mensagem: {data.get('id')}")
+                return jsonify({"status": "acknowledged"}), 200
+
+            else:
+                print(f"⚠️  Webhook ignorado: {data.get('type')}")
+                return jsonify({"status": "ignored"}), 200
 
         except Exception as e:
-            print(f"Error processing webhook: {e}")
+            error_msg = f"❌ Erro no webhook: {str(e)}"
+            print(error_msg)
             return jsonify({"error": "Internal server error"}), 500
