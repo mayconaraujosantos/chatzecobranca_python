@@ -18,7 +18,9 @@ class ProcessWebhookMessage:
             body = message_data.get('body', '').strip()
             message_id = message_data.get('id', '')
 
-            print(f"📩 Mensagem recebida: {from_number} - {body}")
+            print(f"📩 Mensagem recebida de: {from_number}")
+            print(f"💬 Conteúdo: {body}")
+            print(f"🆔 ID da mensagem: {message_id}")
 
             current_state = self.conversation_manager.get_state(from_number)
             print(f"🔍 Estado atual: {current_state}")

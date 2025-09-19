@@ -21,20 +21,47 @@ class WebhookController:
                 print("❌ Nenhum dado recebido no webhook")
                 return jsonify({"error": "No data received"}), 400
 
-            # Verificar se é uma mensagem recebida do ChatPro
-            if data.get('type') == 'received' and data.get('body'):
-                print("✅ Mensagem recebida válida, processando...")
-                result = self.process_webhook.execute(data)
-                return jsonify(result), 200
+            # O webhook do ChatPro é um array [tipo, dados]
+            if isinstance(data, list) and len(data) == 2:
+                event_type = data[0]
+                event_data = data[1]
 
-            # Ack de mensagem (confirmação de entrega)
-            elif data.get('cmd') == 'ack':
-                print(f"✅ ACK recebido para mensagem: {data.get('id')}")
-                return jsonify({"status": "acknowledged"}), 200
+                print(f"🎯 Tipo de evento: {event_type}")
+                print(f"📊 Dados do evento: {event_data}")
+
+                # Mensagem recebida
+                if event_type == "Msg" and event_data.get('body'):
+                    print("✅ Mensagem recebida válida, processando...")
+
+                    # Extrair dados na estrutura CORRETA
+                    message_data = {
+                        'type': 'received',
+                        'from': event_data.get('from'),
+                        'body': event_data.get('body'),
+                        'id': event_data.get('id'),
+                        'timestamp': event_data.get('t'),
+                        'chatId': event_data.get('chatId'),
+                        'to': event_data.get('to'),
+                        'ack': event_data.get('ack'),
+                        'cmd': event_data.get('cmd'),
+                        'sender': event_data.get('sender', {})
+                    }
+
+                    result = self.process_webhook.execute(message_data)
+                    return jsonify(result), 200
+
+                # Confirmação de entrega (ACK)
+                elif event_type == "Cmd" and event_data.get('cmd') == 'ack':
+                    print(f"✅ ACK recebido para mensagem: {event_data.get('id')}")
+                    return jsonify({"status": "acknowledged"}), 200
+
+                else:
+                    print(f"⚠️  Evento ignorado: {event_type} - {event_data.get('cmd')}")
+                    return jsonify({"status": "ignored"}), 200
 
             else:
-                print(f"⚠️  Webhook ignorado: {data.get('type')}")
-                return jsonify({"status": "ignored"}), 200
+                print(f"❌ Formato de webhook inválido: {type(data)}")
+                return jsonify({"error": "Invalid webhook format"}), 400
 
         except Exception as e:
             error_msg = f"❌ Erro no webhook: {str(e)}"
