@@ -1,6 +1,7 @@
 import pytest
 
-from src.main.domain.entities.conversation_state import ConversationManager, ConversationState
+from src.main.domain.entities.conversation_state import (ConversationManager,
+                                                         ConversationState)
 
 
 def test_conversation_manager():

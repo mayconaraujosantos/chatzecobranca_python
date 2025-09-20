@@ -12,5 +12,5 @@ class ChatMessage:
         return {
             "number": self.number,
             "message": self.message,
-            "quoted_message_id": self.quoted_message_id
+            "quoted_message_id": self.quoted_message_id,
         }

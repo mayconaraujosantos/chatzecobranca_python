@@ -9,11 +9,13 @@ requests = "==2.31.0"
 python-dotenv = "==1.0.0"
 werkzeug = "==2.3.7"
 
-
 [dev-packages]
-pytest = "==7.4.0"
 pytest-flask = "==1.2.0"
-flake8 = "==6.0.0"
+black = "*"
+isort = "*"
+flake8 = "*"
+mypy = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.13"

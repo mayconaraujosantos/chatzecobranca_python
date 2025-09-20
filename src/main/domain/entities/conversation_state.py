@@ -1,5 +1,5 @@
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
 from typing import Optional
 
 
@@ -31,9 +31,7 @@ class ConversationManager:
     def set_state(self, phone_number: str, state: ConversationState, data: dict = None):
         if phone_number not in self.conversations:
             self.conversations[phone_number] = UserConversation(
-                phone_number=phone_number,
-                state=state,
-                data=data or {}
+                phone_number=phone_number, state=state, data=data or {}
             )
         else:
             self.conversations[phone_number].state = state
